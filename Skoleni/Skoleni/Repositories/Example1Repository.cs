@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
 using System.Threading.Tasks;
@@ -42,6 +43,43 @@ namespace Skoleni.Repositories
             }
             
             return books.ToList();
+        }
+
+        /// <summary>
+        /// Řazení záznamů a omezení počtu
+        /// </summary>
+        public List<Book> GetBooksWithOrder()
+        {
+            // seřazení dle ceny sestupně a při shodě dále dle titulku vzestupně
+            var expensiveBooks = _db.Books.OrderByDescending(b => b.Price.BasePrice).ThenBy(b => b.Title).ToList();
+
+            // 5 nejlevnějších knih
+            var cheapBooks = _db.Books.OrderBy(b => b.Price).Take(5).ToList();
+
+            return cheapBooks;
+        }
+
+        /// <summary>
+        /// Vrácení jednoho záznamu, porovnání přístupů
+        /// </summary>
+        public Book GetOneBook()
+        {
+            // sql načte jeden záznam       vrátí první záznam, který vyhovuje       vrátí výjimku, když nenajde žádný záznam
+            var category = _db.Categories.OrderBy(c => c.Books.Count).First();
+
+            // sql načte jeden záznam       vrátí první záznam, který vyhovuje       vrátí NULL, když nenajde žádný záznam
+            var comment = _db.Comments.FirstOrDefault(b => b.Text.Contains("líbí"));
+
+            // sql načte dva záznamy        vrátí jediný záznam, který vyhovuje      vrátí výjimku, když nenajde nic nebo více než 1 záznam
+            var user = _db.Users.Single(u => u.Username == "mholec");
+
+            // sql načte dva záznamy        vrátí jediný záznam, který vyhovuje      vrátí výjimku, když najde více než jeden záznam
+            var book = _db.Books.SingleOrDefault(u => u.BookId == Guid.Empty);
+
+            // zkusí najít v contextu a pokud nenajde, volá FirstOrDefault()
+            var cachedBook = _db.Books.Find(Guid.Empty);
+
+            return book;
         }
 
         /// <summary>
