@@ -1,0 +1,29 @@
+﻿@using Skoleni.ViewModels
+@model List<BookViewModel>
+
+<div class="row">
+    @using (Html.BeginForm())
+    {
+        <input type="text" name ="Keyword" placeholder="Keyword"/>
+        <input type="text" name ="PriceFrom" placeholder="Price From"/>
+        <input type="text" name ="PriceTo" placeholder="Price To"/>
+        <input value="Filtrovat" type="submit"/>
+    }
+</div>
+
+<div class="row">
+   @foreach (BookViewModel book in Model)
+   {
+       <h1>@book.BookTitle</h1>
+       <table>
+           <tr>
+               <td>Kategorie</td>
+               <td>@book.CategoryTitle</td>
+           </tr>
+           <tr>
+               <td>Základní cena</td>
+               <td>@book.BookPrice.PriceWithVat</td>
+           </tr>
+       </table>
+   }
+</div>

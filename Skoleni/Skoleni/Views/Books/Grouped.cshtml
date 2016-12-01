@@ -1,0 +1,16 @@
+﻿@using Skoleni.ViewModels
+@model Dictionary<int, List<BookViewModel>>
+
+<div class="row">
+   @foreach (var group in Model)
+   {
+       <h1>ID Kategorie: @group.Key</h1>
+       <p>Počet knih: @group.Value.Count</p>
+       <ul>
+           @foreach (var book in group.Value)
+           {
+               <li>@book.BookTitle</li>
+           }
+       </ul>
+   }
+</div>
