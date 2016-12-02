@@ -25,7 +25,7 @@ namespace Skoleni.Repositories
         /// </summary>
         public List<Book> GetAllBooks(BooksFilter filter = null)
         {
-            var books = _db.Books.AsQueryable();
+            IQueryable<Book> books = _db.Books.AsQueryable();
 
             if (!string.IsNullOrEmpty(filter?.Keyword))
             {
@@ -51,10 +51,10 @@ namespace Skoleni.Repositories
         public List<Book> GetBooksWithOrder()
         {
             // seřazení dle ceny sestupně a při shodě dále dle titulku vzestupně
-            var expensiveBooks = _db.Books.OrderByDescending(b => b.Price.BasePrice).ThenBy(b => b.Title).ToList();
+            List<Book> expensiveBooks = _db.Books.OrderByDescending(b => b.Price.BasePrice).ThenBy(b => b.Title).ToList();
 
             // 5 nejlevnějších knih
-            var cheapBooks = _db.Books.OrderBy(b => b.Price).Take(5).ToList();
+            List<Book> cheapBooks = _db.Books.OrderBy(b => b.Price).Take(5).ToList();
 
             return cheapBooks;
         }
@@ -65,19 +65,19 @@ namespace Skoleni.Repositories
         public Book GetOneBook()
         {
             // sql načte jeden záznam       vrátí první záznam, který vyhovuje       vrátí výjimku, když nenajde žádný záznam
-            var category = _db.Categories.OrderBy(c => c.Books.Count).First();
+            Category category = _db.Categories.OrderBy(c => c.Books.Count).First();
 
             // sql načte jeden záznam       vrátí první záznam, který vyhovuje       vrátí NULL, když nenajde žádný záznam
-            var comment = _db.Comments.FirstOrDefault(b => b.Text.Contains("líbí"));
+            Comment comment = _db.Comments.FirstOrDefault(b => b.Text.Contains("líbí"));
 
             // sql načte dva záznamy        vrátí jediný záznam, který vyhovuje      vrátí výjimku, když nenajde nic nebo více než 1 záznam
-            var user = _db.Users.Single(u => u.Username == "mholec");
+            User user = _db.Users.Single(u => u.Username == "mholec");
 
             // sql načte dva záznamy        vrátí jediný záznam, který vyhovuje      vrátí výjimku, když najde více než jeden záznam
-            var book = _db.Books.SingleOrDefault(u => u.BookId == Guid.Empty);
+            Book book = _db.Books.SingleOrDefault(u => u.BookId == Guid.Empty);
 
             // zkusí najít v contextu a pokud nenajde, volá FirstOrDefault()
-            var cachedBook = _db.Books.Find(Guid.Empty);
+            Book cachedBook = _db.Books.Find(Guid.Empty);
 
             return book;
         }
@@ -91,7 +91,7 @@ namespace Skoleni.Repositories
             User user = _db.Users.Single(x => x.Username == username);
             int[] favoriteCategories = user.GetFavoriteCategories();
 
-            var books = _db.Books.Where(b => favoriteCategories.Contains(b.CategoryId)).ToList();
+            List<Book> books = _db.Books.Where(b => favoriteCategories.Contains(b.CategoryId)).ToList();
 
             return books;
         }
@@ -105,7 +105,7 @@ namespace Skoleni.Repositories
             // Nepoužívat, selekce typu probíhá nad materializovanými daty
             // var paperbacks = GetAllBooks().OfType<Paperback>().ToList();
 
-            var paperbacks = _db.Books.OfType<Paperback>().ToList();
+            List<Paperback> paperbacks = _db.Books.OfType<Paperback>().ToList();
 
             return paperbacks;
         }
@@ -116,11 +116,77 @@ namespace Skoleni.Repositories
         /// </summary>
         public Dictionary<int, List<Book>> GetAllBooksGroupedByCategory()
         {
-            var books = _db.Books.GroupBy(b => b.CategoryId).Select(group => new
+            Dictionary<int, List<Book>> books = _db.Books.GroupBy(b => b.CategoryId).Select(group => new
             {
                 CategoryId = group.Key,
                 Books = group.ToList()
             }).ToDictionary(x=> x.CategoryId, x=> x.Books);
+
+            return books;
+        }
+
+        /// <summary>
+        /// Distinct
+        /// Př.: Vrátit všechny jména autorů ale unikátně
+        /// </summary>
+        public List<string> GetAllAuthorsNames()
+        {
+            List<string> authors = _db.Authors.Select(x=> x.FirstName + " " + x.LastName).Distinct().ToList();
+
+            return authors;
+        }
+
+        /// <summary>
+        /// Union
+        /// Př.: Spojení dvou zdrojů
+        /// </summary>
+        public List<Book> GetBooksFromTwoSources()
+        {
+            var all = _db.Books.OrderBy(b => b.BookId).Take(1).Union(_db.Books.OrderBy(b => b.BookId).Skip(1).Take(1)).ToList();
+
+            return all;
+        }
+
+        /// <summary>
+        /// Intersect (průnik)
+        /// Př.: Chci knihy od Rollinse, které jsou v mých oblíbených žánrech
+        /// </summary>
+        public List<Book> GetBooksFromRollinsInMyFavoriteCategories(string username)
+        {
+            var favoriteCategories = _db.Users.FirstOrDefault(x => x.Username == username).GetFavoriteCategories();
+
+            // Funkční ale neoptimální (spíše pro ukázku intersect)
+            var all = _db.Books.Where(b => b.Authors.Any(a => a.LastName == "Rollins"))
+                .Intersect(_db.Books.Where(b => favoriteCategories.Contains(b.CategoryId))).ToList();
+
+            // Doporučená verze (jedna podmínka)
+            var faster =
+                _db.Books.Where(
+                    b => b.Authors.Any(a => a.LastName == "Rollins") && favoriteCategories.Contains(b.CategoryId)).ToList();
+
+            return faster;
+        }
+
+
+        /// <summary>
+        /// Př.: Chci knihy od Rollinse, které nejsou Thriller
+        /// </summary>
+        public List<Book> GetBooksFromRollinsNotInThrillers()
+        {
+            // Funkční ale neoptimální (spíše pro ukázku except)
+            var all = _db.Books.Where(b => b.Authors.Any(a => a.LastName == "Rollins"))
+                .Except(_db.Books.Where(b => b.Title != "Thrillery")).ToList();
+
+            // Doporučená verze (jedna podmínka)
+            var faster =
+                _db.Books.Where(
+                    b => b.Authors.Any(a => a.LastName == "Rollins") && b.Title != "Thrillery").ToList();
+
+            // Výkonnostně nejlepší řešení
+            var thrillerId = _db.Categories.FirstOrDefault(x => x.Title == "Thrillery").CategoryId;
+            var authorId = _db.Authors.FirstOrDefault(x => x.LastName == "Rollins").AuthorId;
+
+            var books = _db.Books.Where(b => b.Authors.Any(a => a.AuthorId == authorId) && b.CategoryId != thrillerId).ToList();
 
             return books;
         }
@@ -131,7 +197,7 @@ namespace Skoleni.Repositories
         /// </summary>
         public List<Book> GetNewBooks()
         {
-            var books = _db.Books.Where(b => _db.Categories.Any(c => c.CategoryId == b.CategoryId && c.Title.StartsWith("Nové"))).ToList();
+            List<Book> books = _db.Books.Where(b => _db.Categories.Any(c => c.CategoryId == b.CategoryId && c.Title.StartsWith("Nové"))).ToList();
 
             return books;
         }
@@ -154,7 +220,7 @@ namespace Skoleni.Repositories
         /// </summary>
         public List<Category> GetCategoriesWithBooksAndAuthors()
         {
-            var categories = _db.Categories.Include(c => c.Books.Select(b => b.Authors)).ToList();
+            List<Category> categories = _db.Categories.Include(c => c.Books.Select(b => b.Authors)).ToList();
 
             return categories;
         }
@@ -165,15 +231,15 @@ namespace Skoleni.Repositories
         /// </summary>
         public List<Category> GetPlainCategories()
         {
-            var categories = _db.Categories.ToList();
+            List<Category> categories = _db.Categories.ToList();
 
             // ukázka lazy loadingu
-            var books = categories.FirstOrDefault().Books; // dodatečný dotaz
+            ICollection<Book> books = categories.FirstOrDefault().Books; // dodatečný dotaz
 
             // problém by bylo použití v cyklech
             foreach (var category in categories)
             {
-                var book = category.Books.ToList(); // dodatečný dotaz a každým průchodem cyklem
+                List<Book> book = category.Books.ToList(); // dodatečný dotaz a každým průchodem cyklem
             }
 
             return categories;
@@ -185,7 +251,7 @@ namespace Skoleni.Repositories
         /// </summary>
         public Category GetCategoriesWithBooks(int categoryId)
         {
-            var category = _db.Categories.FirstOrDefault(x => x.CategoryId == categoryId);
+            Category category = _db.Categories.FirstOrDefault(x => x.CategoryId == categoryId);
 
             _db.Entry(category).Reference(c => c.ParentCategory).Load(); // pokud je ParentCategory null, nic ani nebude načítat
             _db.Entry(category).Collection(c => c.Books).Query().Where(x=> x.Title == "Amazonie").Load(); // podmíněný explicit loading
@@ -202,7 +268,7 @@ namespace Skoleni.Repositories
         /// </summary>
         public async Task<List<Book>> GetBooksAsync()
         {
-            var books = await _db.Books.ToListAsync();
+            List<Book> books = await _db.Books.ToListAsync();
 
             return books;
         }
@@ -213,7 +279,7 @@ namespace Skoleni.Repositories
         /// </summary>
         public async Task<Category> GetCategoryWithBooksAsync(int categoryId)
         {
-            var category = await _db.Categories.Include(c => c.Books).FirstOrDefaultAsync(c => c.CategoryId == categoryId);
+            Category category = await _db.Categories.Include(c => c.Books).FirstOrDefaultAsync(c => c.CategoryId == categoryId);
 
             return category;
         }

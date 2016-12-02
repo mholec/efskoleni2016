@@ -30,7 +30,7 @@ namespace Skoleni.Entities
             // Property(x => x.Price.BasePrice).HasColumnName("Price");
             // Property(x => x.Price.BasePrice).HasColumnName("VatRate");
 
-            HasMany(x => x.Authors).WithMany(x => x.Books).Map(x => x.MapLeftKey("AuthorId").MapRightKey("BookId"));
+            HasMany(x => x.Authors).WithMany(x => x.Books).Map(x => x.MapLeftKey("BookId").MapRightKey("AuthorId"));
             HasRequired(x => x.Category)
                 .WithMany(x => x.Books)
                 .HasForeignKey(x => x.CategoryId)
