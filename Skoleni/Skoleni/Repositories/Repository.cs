@@ -13,11 +13,11 @@ namespace Skoleni.Repositories
     /// <summary>
     /// Ukázky na načítání dat z databáze
     /// </summary>
-    public class Example1Repository
+    public class Repository
     {
         private readonly AppContext _db;
 
-        public Example1Repository(AppContext db)
+        public Repository(AppContext db)
         {
             _db = db;
         }

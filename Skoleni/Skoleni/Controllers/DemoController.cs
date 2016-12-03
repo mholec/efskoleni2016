@@ -7,9 +7,9 @@ namespace Skoleni.Controllers
 {
     public class DemoController : Controller
     {
-        private readonly Example1Repository _repository;
+        private readonly Repository _repository;
 
-        public DemoController(Example1Repository repository)
+        public DemoController(Repository repository)
         {
             _repository = repository;
         }

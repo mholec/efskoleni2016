@@ -8,9 +8,9 @@ namespace Skoleni.Controllers
 {
     public class BooksController : Controller
     {
-        private readonly Example1Repository _repository;
+        private readonly Repository _repository;
 
-        public BooksController(Example1Repository repository)
+        public BooksController(Repository repository)
         {
             _repository = repository;
         }

@@ -182,7 +182,7 @@
     <Compile Include="Initializers\Inits.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\Example1Repository.cs" />
+    <Compile Include="Repositories\Repository.cs" />
     <Compile Include="ViewModels\BookViewModel.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
   </ItemGroup>
