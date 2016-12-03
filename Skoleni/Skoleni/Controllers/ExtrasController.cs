@@ -173,5 +173,23 @@ namespace Skoleni.Controllers
 
             return Content("OK");
         }
+
+        //////////////////////////////////////////////////////////
+        ///                                                    ///
+        ///   S T O R E D   P R O C E D U R E S                ///
+        ///                                                    ///
+        //////////////////////////////////////////////////////////
+
+        /// <summary>
+        /// ADO.NET (underlayer)
+        /// Př.: Chci zavolat vlastní uloženou proceduru s parametrem
+        /// </summary>
+        public ActionResult StoredProcedure()
+        {
+            DbSqlQuery<Author> query = _db.Authors.SqlQuery("GetAuthorsByLastName", new SqlParameter("LastName", "Rollins"));
+            List<Author> authors = query.ToList();
+
+            return Content("OK");
+        }
     }
 }
