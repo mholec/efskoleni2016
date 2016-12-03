@@ -1,0 +1,16 @@
+﻿@using Skoleni.ViewModels
+@model CategoryViewModel
+
+<div class="row">
+    <h1>@(Model.Id != 0 ? "Úprava kategorie" : "Vytvoření kategorie")</h1>
+
+    @using (Html.BeginForm(Model.Id != 0 ? "Edit" : "Create"))
+    {
+        @Html.HiddenFor(x => x.Id)
+
+        @Html.LabelFor(x => x.Title)
+        @Html.TextBoxFor(x => x.Title)
+
+        <input value="Uložit" type="submit"/>
+    }
+</div>

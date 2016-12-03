@@ -4,6 +4,10 @@
 <div class="row">
     <a href="@Url.Action("Create", "Categories")">Vytvořit</a>
     <table>
+        <tr>
+            <td width="300"><strong>Titulek</strong></td>
+            <td colspan="2"></td>
+        </tr>
         @foreach (CategoryViewModel category in Model)
         {
             <tr>
