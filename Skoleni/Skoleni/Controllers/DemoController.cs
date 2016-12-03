@@ -17,7 +17,7 @@ namespace Skoleni.Controllers
         {
             // var result = _repository.GetBooksByFavoriteCategories("mholec");
             //var result = _repository.GetAllPaperbacks();
-            var result = _repository.GetBooksFromRollinsNotInThrillers();
+            var result = _repository.GetBooksContainingWord("Amaz", "knih");
 
             return Content("");
         }

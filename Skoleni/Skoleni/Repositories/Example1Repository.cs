@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using LinqKit;
 using Skoleni.Controllers;
 using Skoleni.Entities;
 
@@ -167,7 +169,6 @@ namespace Skoleni.Repositories
             return faster;
         }
 
-
         /// <summary>
         /// Př.: Chci knihy od Rollinse, které nejsou Thriller
         /// </summary>
@@ -200,6 +201,33 @@ namespace Skoleni.Repositories
             List<Book> books = _db.Books.Where(b => _db.Categories.Any(c => c.CategoryId == b.CategoryId && c.Title.StartsWith("Nové"))).ToList();
 
             return books;
+        }
+
+        /// <summary>
+        /// LinqKit: Predicate builders
+        /// Př.: vrátit knihy, které obsahují alespoň jedno klíčové slovo
+        /// </summary>
+        public List<Book> GetBooksContainingWord(params string[] keywords)
+        {
+            IQueryable<Book> books = _db.Books.AsExpandable();
+
+            var predicate = PredicateBuilder.New<Book>(false);
+            foreach (var keyword in keywords)
+            {
+                string temp = keyword;
+                predicate.Or(b => b.Description.Contains(keyword) || b.Title.Contains(temp));
+            }
+
+            var result = books.Where(predicate).ToList();
+
+            // Z hlediska znovupoužitelnosti a čitelnosti je lepší umístit vše nad Book
+            var specificBooks = _db.Books.AsExpandable().Where(Book.ContainsWord(keywords)).ToList();
+
+            // Snadno lze kombinovat
+            var specific = Book.ContainsWord(keywords).And(Book.IsFree());
+            var specificFreeBooks = _db.Books.AsExpandable().Where(specific).ToList();
+
+            return specificBooks;
         }
 
         /// <summary>

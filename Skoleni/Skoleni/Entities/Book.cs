@@ -5,7 +5,7 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace Skoleni.Entities
 {
-    public class Book
+    public partial class Book
     {
         public Guid BookId { get; set; }
         public int CategoryId { get; set; }

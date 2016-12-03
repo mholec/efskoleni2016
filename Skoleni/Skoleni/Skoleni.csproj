@@ -61,6 +61,10 @@
     <Reference Include="HibernatingRhinos.Profiler.Integration">
       <HintPath>..\lib\HibernatingRhinos.Profiler.Integration.dll</HintPath>
     </Reference>
+    <Reference Include="LinqKit.EntityFramework, Version=1.1.8.0, Culture=neutral, PublicKeyToken=b6c8cfc71f7a6a80, processorArchitecture=MSIL">
+      <HintPath>..\packages\LinqKit.EntityFramework.1.1.8.0\lib\net452\LinqKit.EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>True</Private>
@@ -163,6 +167,7 @@
     <Compile Include="Entities\Ebook.cs" />
     <Compile Include="Entities\EbookFormat.cs" />
     <Compile Include="Entities\Comment.cs" />
+    <Compile Include="Entities\ExtendedEntities\Book.cs" />
     <Compile Include="Entities\Paperback.cs" />
     <Compile Include="Entities\PaperbackSize.cs" />
     <Compile Include="Entities\Price.cs" />
