@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
-using Skoleni.Entities;
+﻿using System.Web.Mvc;
 using Skoleni.Repositories;
 
 namespace Skoleni.Controllers
@@ -17,7 +15,7 @@ namespace Skoleni.Controllers
         public ActionResult Index()
         {
             // var result = _repository.GetBooksByFavoriteCategories("mholec");
-            //var result = _repository.GetAllPaperbacks();
+            // var result = _repository.GetAllPaperbacks();
             var result = _repository.GetBooksContainingWord("Amaz", "knih");
 
             return Content("");
