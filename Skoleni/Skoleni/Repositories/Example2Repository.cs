@@ -17,5 +17,19 @@ namespace Skoleni.Repositories
         {
             _db = db;
         }
+
+        public List<Category> GetAll()
+        {
+            var allCategories = _db.Categories.ToList();
+
+            return allCategories;
+        }
+
+        public Category GetById(int categoryId)
+        {
+            var caregory = _db.Categories.Find(categoryId);
+
+            return caregory;
+        }
     }
 }
