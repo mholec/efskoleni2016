@@ -66,6 +66,9 @@ namespace Skoleni.Repositories
         /// </summary>
         public Book GetOneBook()
         {
+            _db.Books.OfType<Ebook>().Where(b => b.Format == EbookFormat.Txt)
+
+
             // sql načte jeden záznam       vrátí první záznam, který vyhovuje       vrátí výjimku, když nenajde žádný záznam
             Category category = _db.Categories.OrderBy(c => c.Books.Count).First();
 

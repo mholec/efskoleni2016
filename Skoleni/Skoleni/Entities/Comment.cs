@@ -1,15 +1,26 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
 
 namespace Skoleni.Entities
 {
-    public class Comment
+    public class Comment : IValidatableObject
     {
         public int CommentId { get; set; }
         public int AuthorId { get; set; }
         public string Text { get; set; }
+        public string Subject { get; set; }
 
         public virtual Author Author { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (string.IsNullOrEmpty(Text) && string.IsNullOrEmpty(Subject))
+            {
+                yield return new ValidationResult("Musí být uveden předmět nebo text zprávy");
+            }
+        }
     }
 
     public class CommentDbConfiguration : EntityTypeConfiguration<Comment>
