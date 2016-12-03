@@ -24,11 +24,11 @@ namespace Skoleni.Migrations
             });
 
             // categories
-            var categoryThriller = new Category { Title = "Thrillery" };
+            Category categoryThriller = new Category { Title = "Thrillery" };
             context.Categories.AddOrUpdate(x => x.Title, categoryThriller);
 
             // authors
-            var authorRollins = new Author { FirstName = "James", LastName = "Rollins" };
+            Author authorRollins = new Author { FirstName = "James", LastName = "Rollins" };
             context.Authors.AddOrUpdate(x => new {x.FirstName, x.LastName}, authorRollins);
 
             // books

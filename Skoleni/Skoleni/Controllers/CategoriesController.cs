@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Data.Entity;
+﻿using System.Linq;
 using System.Web.Mvc;
-using Newtonsoft.Json;
 using Skoleni.Entities;
-using Skoleni.Extras;
 using Skoleni.ViewModels;
 
 namespace Skoleni.Controllers
@@ -17,6 +13,12 @@ namespace Skoleni.Controllers
         {
             _db = db;
         }
+
+        //////////////////////////////////////////////////////////
+        ///                                                    ///
+        ///   D E M O    C R U D                               ///
+        ///                                                    ///
+        //////////////////////////////////////////////////////////
 
         public ActionResult Index()
         {
@@ -103,48 +105,6 @@ namespace Skoleni.Controllers
             _db.SaveChanges();
 
             return RedirectToAction("Index");
-        }
-
-        /// <summary>
-        /// Aktualizace object graph
-        /// Př.: Chci vložit kategorii i s nadřazenou kategorií a knihami
-        /// </summary>
-        public ActionResult Extras_AddManyObjects()
-        {
-            // vytvoření kompletního stromu
-            var category = new Category()
-            {
-                Title = "Povídky",
-                ParentCategory = new Category()
-                {
-                    Title = "Zlevněné knihy"
-                },
-                Books = new List<Book>()
-                {
-                    new Paperback() {Title = "Povídka o černém notebooku", Description = "Nová knížka", Size = PaperbackSize.A4, Price = new Price() {BasePrice = 0, VatRate = 0} },
-                    new Paperback() {Title = "Humoreska", Description = "Trochu jiná kniha", Size = PaperbackSize.A4, Price = new Price() {BasePrice = 50, VatRate = 0.15M } }
-                }
-            };
-            _db.Categories.Add(category);
-            _db.SaveChanges();
-
-            return View("Index");
-        }
-
-        /// <summary>
-        /// Change Tracker API
-        /// Př.: Chci ci auditovat změny na nějaké kolekci, třeba kategorie
-        /// </summary>
-        public ActionResult Extras_ChangeTrackerApi()
-        {
-            var category = _db.Categories.Include(x => x.Books).FirstOrDefault(b => b.CategoryId == 4);
-            category.Title = "Naučte se C# za 21 hodin";
-            category.Books.FirstOrDefault().Title = "Super kniha";
-            category.ParentCategory = null;
-
-            var result = new Auditor(_db.ChangeTracker).AuditChanges(true);
-
-            return Json(result, JsonRequestBehavior.AllowGet);
         }
     }
 }

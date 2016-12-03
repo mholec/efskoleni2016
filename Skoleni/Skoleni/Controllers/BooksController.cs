@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using Skoleni.Repositories;
 using Skoleni.ViewModels;
@@ -16,7 +17,7 @@ namespace Skoleni.Controllers
 
         public ActionResult Index()
         {
-            var viewmodel = _repository.GetAllBooks().Select(b => new BookViewModel
+            List<BookViewModel> viewmodel = _repository.GetAllBooks().Select(b => new BookViewModel
             {
                 BookPrice = b.Price,
                 BookTitle = b.Title,
@@ -29,7 +30,7 @@ namespace Skoleni.Controllers
         [HttpPost]
         public ActionResult Index(BooksFilter filter)
         {
-            var viewmodel = _repository.GetAllBooks(filter)
+            List<BookViewModel> viewmodel = _repository.GetAllBooks(filter)
                 .Select(b => new BookViewModel
             {
                 BookPrice = b.Price,
@@ -42,7 +43,7 @@ namespace Skoleni.Controllers
 
         public ActionResult Grouped()
         {
-            var viewmodel = _repository.GetAllBooksGroupedByCategory()
+            Dictionary<int, List<BookViewModel>> viewmodel = _repository.GetAllBooksGroupedByCategory()
                 .ToDictionary(x => x.Key, x => x.Value.Select(b => new BookViewModel
                 {
                     BookPrice = b.Price,

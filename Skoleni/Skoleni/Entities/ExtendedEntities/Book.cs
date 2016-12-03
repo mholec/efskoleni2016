@@ -13,7 +13,7 @@ namespace Skoleni.Entities
 
         public static Expression<Func<Book, bool>> ContainsWord(params string[] keywords)
         {
-            var predicate = PredicateBuilder.New<Book>(false);
+            ExpressionStarter<Book> predicate = PredicateBuilder.New<Book>(false);
             foreach (string keyword in keywords)
             {
                 string temp = keyword;

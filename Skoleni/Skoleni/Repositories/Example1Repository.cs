@@ -144,7 +144,7 @@ namespace Skoleni.Repositories
         /// </summary>
         public List<Book> GetBooksFromTwoSources()
         {
-            var all = _db.Books.OrderBy(b => b.BookId).Take(1).Union(_db.Books.OrderBy(b => b.BookId).Skip(1).Take(1)).ToList();
+            List<Book> all = _db.Books.OrderBy(b => b.BookId).Take(1).Union(_db.Books.OrderBy(b => b.BookId).Skip(1).Take(1)).ToList();
 
             return all;
         }
@@ -155,14 +155,14 @@ namespace Skoleni.Repositories
         /// </summary>
         public List<Book> GetBooksFromRollinsInMyFavoriteCategories(string username)
         {
-            var favoriteCategories = _db.Users.FirstOrDefault(x => x.Username == username).GetFavoriteCategories();
+            int[] favoriteCategories = _db.Users.FirstOrDefault(x => x.Username == username).GetFavoriteCategories();
 
             // Funkční ale neoptimální (spíše pro ukázku intersect)
-            var all = _db.Books.Where(b => b.Authors.Any(a => a.LastName == "Rollins"))
+            List<Book> all = _db.Books.Where(b => b.Authors.Any(a => a.LastName == "Rollins"))
                 .Intersect(_db.Books.Where(b => favoriteCategories.Contains(b.CategoryId))).ToList();
 
             // Doporučená verze (jedna podmínka)
-            var faster =
+            List<Book> faster =
                 _db.Books.Where(
                     b => b.Authors.Any(a => a.LastName == "Rollins") && favoriteCategories.Contains(b.CategoryId)).ToList();
 
@@ -175,19 +175,19 @@ namespace Skoleni.Repositories
         public List<Book> GetBooksFromRollinsNotInThrillers()
         {
             // Funkční ale neoptimální (spíše pro ukázku except)
-            var all = _db.Books.Where(b => b.Authors.Any(a => a.LastName == "Rollins"))
+            List<Book> all = _db.Books.Where(b => b.Authors.Any(a => a.LastName == "Rollins"))
                 .Except(_db.Books.Where(b => b.Title != "Thrillery")).ToList();
 
             // Doporučená verze (jedna podmínka)
-            var faster =
+            List<Book> faster =
                 _db.Books.Where(
                     b => b.Authors.Any(a => a.LastName == "Rollins") && b.Title != "Thrillery").ToList();
 
             // Výkonnostně nejlepší řešení
-            var thrillerId = _db.Categories.FirstOrDefault(x => x.Title == "Thrillery").CategoryId;
-            var authorId = _db.Authors.FirstOrDefault(x => x.LastName == "Rollins").AuthorId;
+            int thrillerId = _db.Categories.FirstOrDefault(x => x.Title == "Thrillery").CategoryId;
+            int authorId = _db.Authors.FirstOrDefault(x => x.LastName == "Rollins").AuthorId;
 
-            var books = _db.Books.Where(b => b.Authors.Any(a => a.AuthorId == authorId) && b.CategoryId != thrillerId).ToList();
+            List<Book> books = _db.Books.Where(b => b.Authors.Any(a => a.AuthorId == authorId) && b.CategoryId != thrillerId).ToList();
 
             return books;
         }
@@ -211,21 +211,21 @@ namespace Skoleni.Repositories
         {
             IQueryable<Book> books = _db.Books.AsExpandable();
 
-            var predicate = PredicateBuilder.New<Book>(false);
+            ExpressionStarter<Book> predicate = PredicateBuilder.New<Book>(false);
             foreach (var keyword in keywords)
             {
                 string temp = keyword;
                 predicate.Or(b => b.Description.Contains(keyword) || b.Title.Contains(temp));
             }
 
-            var result = books.Where(predicate).ToList();
+            List<Book> result = books.Where(predicate).ToList();
 
             // Z hlediska znovupoužitelnosti a čitelnosti je lepší umístit vše nad Book
-            var specificBooks = _db.Books.AsExpandable().Where(Book.ContainsWord(keywords)).ToList();
+            List<Book> specificBooks = _db.Books.AsExpandable().Where(Book.ContainsWord(keywords)).ToList();
 
             // Snadno lze kombinovat
-            var specific = Book.ContainsWord(keywords).And(Book.IsFree());
-            var specificFreeBooks = _db.Books.AsExpandable().Where(specific).ToList();
+            Expression<Func<Book, bool>> specific = Book.ContainsWord(keywords).And(Book.IsFree());
+            List<Book> specificFreeBooks = _db.Books.AsExpandable().Where(specific).ToList();
 
             return specificBooks;
         }
