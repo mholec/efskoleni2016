@@ -2,9 +2,9 @@
 
 Prezentace - [https://odkaz.me/ef-ppx ](https://odkaz.me/ef-ppx )
 
-- Výchozí aplikace - [https://odkaz.me/ef-master ](https://odkaz.me/ef-master)
-- Finální verze s ukázkami - [https://odkaz.me/ef-final](https://odkaz.me/ef-final)
-- Ukázky dotazů z aplikací - [https://odkaz.me/ef-query](https://odkaz.me/ef-query)
+- Výchozí aplikace - [http://odkaz.me/ef-master ](http://odkaz.me/ef-master)
+- Finální verze s ukázkami - [http://odkaz.me/ef-final](http://odkaz.me/ef-final)
+- Ukázky dotazů z aplikací - [http://odkaz.me/ef-query](http://odkaz.me/ef-query)
 
 
 Alternativně je možné použít GitHub: [https://github.com/mholec/efskoleni2016](https://github.com/mholec/efskoleni2016)
