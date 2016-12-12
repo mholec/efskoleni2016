@@ -188,6 +188,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\demo.sql" />
+    <Content Include="App_Data\test_data.sql" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

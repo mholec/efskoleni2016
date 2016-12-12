@@ -70,7 +70,7 @@ namespace Skoleni.Repositories
             Category category = _db.Categories.OrderBy(c => c.Books.Count).First();
 
             // sql načte jeden záznam       vrátí první záznam, který vyhovuje       vrátí NULL, když nenajde žádný záznam
-            Comment comment = _db.Comments.FirstOrDefault(b => b.Text.Contains("líbí"));
+            Comment comment = _db.Comments.FirstOrDefault(b => b.Text.Contains("Czajkowski"));
 
             // sql načte dva záznamy        vrátí jediný záznam, který vyhovuje      vrátí výjimku, když nenajde nic nebo více než 1 záznam
             User user = _db.Users.Single(u => u.Username == "mholec");
@@ -79,7 +79,7 @@ namespace Skoleni.Repositories
             Book book = _db.Books.SingleOrDefault(u => u.BookId == Guid.Empty);
 
             // zkusí najít v contextu a pokud nenajde, volá FirstOrDefault()
-            Book cachedBook = _db.Books.Find(Guid.Empty);
+            Book cachedBook = _db.Books.Find(Guid.Parse("c1f3ba8b-e9b7-e611-af12-e4a471d99e1d");
 
             return book;
         }
